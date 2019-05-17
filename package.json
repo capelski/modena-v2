@@ -3,8 +3,7 @@
     "name": "modena",
     "version": "2.0.0",
     "description": "Express wrapper to expose isolated multiple apps on the same server",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "index.js",
     "repository": {
       "type": "git",
       "url": "git+https://github.com/L3bowski/modena-v2.git"
