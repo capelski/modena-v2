@@ -1,8 +1,8 @@
-import { Application, Response, NextFunction } from 'express';
+import { Application, NextFunction, Response } from 'express';
 import { join } from 'path';
-import { AppSettings, ModenaRequest } from './types';
+import { IAppSettings, IModenaRequest } from './types';
 
-export const exposeHostedApps = (mainApp: Application, appsSettings: AppSettings[]) => {
+export const exposeHostedApps = (mainApp: Application, appsSettings: IAppSettings[]) => {
     return Promise.all(
         appsSettings.map(appSettings => {
             try {
@@ -36,13 +36,13 @@ export const exposeHostedApps = (mainApp: Application, appsSettings: AppSettings
 };
 
 export const getRenderIsolator = (appsPath: string) => (
-    req: ModenaRequest,
+    req: IModenaRequest,
     res: Response,
     next: NextFunction
 ) => {
     if (req.__modenaApp) {
         const renderFunction = res.render.bind(res);
-        res.render = (viewName: string, options?: Object) => {
+        res.render = (viewName: string, options?: object) => {
             const viewPath = join(appsPath, req.__modenaApp!.name, 'views', viewName);
             renderFunction(viewPath, options);
         };
@@ -50,7 +50,7 @@ export const getRenderIsolator = (appsPath: string) => (
     next();
 };
 
-export const setDefaultApp = (appsSettings: AppSettings[], defaultAppName: string) => {
+export const setDefaultApp = (appsSettings: IAppSettings[], defaultAppName: string) => {
     const isThereSomeDefaultApp = appsSettings.reduce((reduced, appSettings) => {
         appSettings.isDefaultApp = appSettings.name === defaultAppName;
         return reduced || appSettings.isDefaultApp;

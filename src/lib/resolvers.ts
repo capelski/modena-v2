@@ -1,7 +1,7 @@
-import { AppSettings, Dictionary, MatchingItems, ModenaRequest } from './types';
-import { Response, NextFunction } from 'express';
+import { NextFunction, Response } from 'express';
+import { IAppSettings, IDictionary, IMatchingItems, IModenaRequest } from './types';
 
-const resolveThroughDefaultApp = (appsSettings: AppSettings[]) => {
+const resolveThroughDefaultApp = (appsSettings: IAppSettings[]) => {
     const matchingApps = resolveThroughNonUniqueCriteria(
         appsSettings,
         appSettings => appSettings.isDefaultApp
@@ -24,7 +24,7 @@ const resolveThroughDefaultApp = (appsSettings: AppSettings[]) => {
     return accessedApp;
 };
 
-const resolveThroughDomain = (appsSettings: AppSettings[], domain: string) => {
+const resolveThroughDomain = (appsSettings: IAppSettings[], domain: string) => {
     const matchingApps = resolveThroughNonUniqueCriteria(appsSettings, appSettings =>
         Boolean(appSettings.publicDomains.find(d => d === domain))
     );
@@ -47,10 +47,10 @@ const resolveThroughDomain = (appsSettings: AppSettings[], domain: string) => {
 };
 
 const resolveThroughNonUniqueCriteria = (
-    appsSettings: AppSettings[],
-    criteria: (aS: AppSettings) => boolean
+    appsSettings: IAppSettings[],
+    criteria: (aS: IAppSettings) => boolean
 ) => {
-    const matchingAppSettings: MatchingItems<AppSettings> = {
+    const matchingAppSettings: IMatchingItems<IAppSettings> = {
         count: 0,
         items: [],
     };
@@ -63,8 +63,11 @@ const resolveThroughNonUniqueCriteria = (
     }, matchingAppSettings);
 };
 
-const resolveThroughQueryParameters = (appsSettings: AppSettings[], query: Dictionary<string>) => {
-    let accessedApp = undefined;
+const resolveThroughQueryParameters = (
+    appsSettings: IAppSettings[],
+    query: IDictionary<string>
+) => {
+    let accessedApp: IAppSettings | undefined;
     if (query && query.$modena) {
         accessedApp = appsSettings.find(appSettings => appSettings.name === query.$modena);
         if (!accessedApp) {
@@ -80,7 +83,7 @@ const resolveThroughQueryParameters = (appsSettings: AppSettings[], query: Dicti
     return accessedApp;
 };
 
-const resolveThroughUrlPathname = (appsSettings: AppSettings[], url: string) => {
+const resolveThroughUrlPathname = (appsSettings: IAppSettings[], url: string) => {
     const accessedApp = appsSettings.find(appSettings => url.startsWith(`/${appSettings.name}`));
     if (!accessedApp) {
         console.log(`   Unable to match the url pathname (${url}) to any app`);
@@ -90,8 +93,8 @@ const resolveThroughUrlPathname = (appsSettings: AppSettings[], url: string) => 
     return accessedApp;
 };
 
-export const getRequestResolver = (appsSettings: AppSettings[]) => (
-    req: ModenaRequest,
+export const getRequestResolver = (appsSettings: IAppSettings[]) => (
+    req: IModenaRequest,
     res: Response,
     next: NextFunction
 ) => {

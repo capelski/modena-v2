@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
-export interface AppSettings {
-    envVariables: Dictionary<string | undefined>;
+export interface IAppSettings {
+    envVariables: IDictionary<string | undefined>;
     expressAppFile: string;
     isDefaultApp: boolean;
     name: string;
@@ -9,15 +9,15 @@ export interface AppSettings {
     publicDomains: string[];
 }
 
-export interface Dictionary<T> {
+export interface IDictionary<T> {
     [key: string]: T;
 }
 
-export interface MatchingItems<T> {
+export interface IMatchingItems<T> {
     count: number;
     items: T[];
 }
 
-export interface ModenaRequest extends Request {
-    __modenaApp?: AppSettings;
+export interface IModenaRequest extends Request {
+    __modenaApp?: IAppSettings;
 }

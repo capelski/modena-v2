@@ -1,11 +1,11 @@
 import { existsSync, lstatSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { AppSettings, Dictionary } from './types';
+import { IAppSettings, IDictionary } from './types';
 
 const getAppEnvironmentPrefix = (appName: string) =>
     appName.toUpperCase().replace(/-/g, '_') + '__';
 
-export const getAvailableApps = (appsPath: string): AppSettings[] => {
+export const getAvailableApps = (appsPath: string): IAppSettings[] => {
     if (!appsPath) {
         console.error('No apps path was provided');
         return [];
@@ -15,13 +15,13 @@ export const getAvailableApps = (appsPath: string): AppSettings[] => {
         .map(appName => {
             const appPath = join(appsPath, appName);
 
-            let modenaAppConfig: Partial<AppSettings> = {};
+            let modenaAppConfig: Partial<IAppSettings> = {};
             const modenaAppConfigPath = join(appPath, 'modena.json');
             if (existsSync(modenaAppConfigPath)) {
                 modenaAppConfig = require(modenaAppConfigPath);
             }
 
-            const appSettings: AppSettings = {
+            const appSettings: IAppSettings = {
                 envVariables: {},
                 expressAppFile: join(
                     appPath,
@@ -44,13 +44,14 @@ export const getAvailableApps = (appsPath: string): AppSettings[] => {
 const getDirectoriesName = (path: string) =>
     readdirSync(path).filter(name => lstatSync(join(path, name)).isDirectory());
 
-const loadEnvironmentVariables = (appsSettings: AppSettings[]) => {
-    const appsSettingsDictionary: Dictionary<AppSettings> = appsSettings.reduce(
+const loadEnvironmentVariables = (appsSettings: IAppSettings[]) => {
+    const seed: IDictionary<IAppSettings> = {};
+    const appsSettingsDictionary: IDictionary<IAppSettings> = appsSettings.reduce(
         (reduced, appSettings) => ({
             ...reduced,
             [getAppEnvironmentPrefix(appSettings.name)]: appSettings,
         }),
-        {}
+        seed
     );
 
     Object.keys(process.env).forEach(envKey => {
@@ -66,6 +67,6 @@ const loadEnvironmentVariables = (appsSettings: AppSettings[]) => {
 
     return Object.values(appsSettingsDictionary).reduce(
         (reduced, appSettings) => reduced.concat([appSettings]),
-        [] as AppSettings[]
+        [] as IAppSettings[]
     );
 };
