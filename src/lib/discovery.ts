@@ -2,7 +2,8 @@ import { existsSync, lstatSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { AppSettings, Dictionary } from './types';
 
-const getAppEnvironmentPrefix = (appName: string) => appName.toUpperCase().replace(/-/g,'_') + '__';
+const getAppEnvironmentPrefix = (appName: string) =>
+    appName.toUpperCase().replace(/-/g, '_') + '__';
 
 export const getAvailableApps = (appsPath: string): AppSettings[] => {
     if (!appsPath) {
@@ -22,11 +23,14 @@ export const getAvailableApps = (appsPath: string): AppSettings[] => {
 
             const appSettings: AppSettings = {
                 envVariables: {},
-                expressAppFile: join(appPath, modenaAppConfig.expressAppFile || 'get-express-app.js'),
+                expressAppFile: join(
+                    appPath,
+                    modenaAppConfig.expressAppFile || 'get-express-app.js'
+                ),
                 isDefaultApp: false,
                 name: appName,
                 path: appPath,
-                publicDomains: modenaAppConfig.publicDomains || []
+                publicDomains: modenaAppConfig.publicDomains || [],
             };
             return appSettings;
         })
@@ -41,20 +45,27 @@ const getDirectoriesName = (path: string) =>
     readdirSync(path).filter(name => lstatSync(join(path, name)).isDirectory());
 
 const loadEnvironmentVariables = (appsSettings: AppSettings[]) => {
-    const appsSettingsDictionary: Dictionary<AppSettings> = appsSettings.reduce((reduced, appSettings) => ({
-        ...reduced,
-        [getAppEnvironmentPrefix(appSettings.name)]: appSettings
-    }), {});
-    
+    const appsSettingsDictionary: Dictionary<AppSettings> = appsSettings.reduce(
+        (reduced, appSettings) => ({
+            ...reduced,
+            [getAppEnvironmentPrefix(appSettings.name)]: appSettings,
+        }),
+        {}
+    );
+
     Object.keys(process.env).forEach(envKey => {
         Object.keys(appsSettingsDictionary).forEach(appPrefix => {
             if (envKey.startsWith(appPrefix)) {
                 const envVariableName = envKey.replace(appPrefix, '');
-                appsSettingsDictionary[appPrefix].envVariables[envVariableName] = process.env[envKey];
+                appsSettingsDictionary[appPrefix].envVariables[envVariableName] =
+                    process.env[envKey];
                 delete process.env[envKey];
             }
         });
     });
 
-    return Object.values(appsSettingsDictionary).reduce((reduced, appSettings) => reduced.concat([appSettings]), [] as AppSettings[]);
+    return Object.values(appsSettingsDictionary).reduce(
+        (reduced, appSettings) => reduced.concat([appSettings]),
+        [] as AppSettings[]
+    );
 };
