@@ -7,7 +7,7 @@ const createHttpsServer = (app: Application, options: IHttpsConfiguration, resol
     const httpsCredentials = {
         cert: readFileSync(options.certPath),
         key: readFileSync(options.keyPath),
-        passphrase: options.passphrase,
+        passphrase: options.passphrase
     };
     https.createServer(httpsCredentials, app).listen(443, () => {
         console.log(`HTTPS express app listening at port 443`);
@@ -74,7 +74,7 @@ export const launchServer = (app: Application, options: Partial<IModenaOptions> 
     const defaultedOptions: IModenaOptions = {
         httpsConfiguration: undefined,
         port: 80,
-        ...options,
+        ...options
     };
     return isHttpsConfigurationValid(defaultedOptions.httpsConfiguration)
         ? launchHttpsServer(app, defaultedOptions.port, defaultedOptions.httpsConfiguration!)

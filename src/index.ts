@@ -8,7 +8,7 @@ export {
     IHttpsConfiguration,
     IMatchingItems,
     IModenaOptions,
-    IModenaRequest,
+    IModenaRequest
 } from './lib/types';
 
 // TODO .prettier trailing comma to none

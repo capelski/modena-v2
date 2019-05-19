@@ -52,7 +52,7 @@ const resolveThroughNonUniqueCriteria = (
 ) => {
     const matchingAppSettings: IMatchingItems<IAppSettings> = {
         count: 0,
-        items: [],
+        items: []
     };
     return appsSettings.reduce((reduced, appSettings) => {
         if (criteria(appSettings)) {

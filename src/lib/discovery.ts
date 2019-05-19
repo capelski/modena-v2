@@ -30,7 +30,7 @@ export const getAvailableApps = (appsPath: string): IAppSettings[] => {
                 isDefaultApp: false,
                 name: appName,
                 path: appPath,
-                publicDomains: modenaAppConfig.publicDomains || [],
+                publicDomains: modenaAppConfig.publicDomains || []
             };
             return appSettings;
         })
@@ -49,7 +49,7 @@ const loadEnvironmentVariables = (appsSettings: IAppSettings[]) => {
     const appsSettingsDictionary: IDictionary<IAppSettings> = appsSettings.reduce(
         (reduced, appSettings) => ({
             ...reduced,
-            [getAppEnvironmentPrefix(appSettings.name)]: appSettings,
+            [getAppEnvironmentPrefix(appSettings.name)]: appSettings
         }),
         seed
     );
