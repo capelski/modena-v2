@@ -9,6 +9,8 @@ export {
     IModenaRequest,
 } from './lib/types';
 
+// TODO README.md, LICENSE.md
+// TODO Enable HTTPs capabilities
 // TODO Add winston. Add no-console: true to tslint.json
 // TODO Create cucumber unit tests
-// TODO Add husky precommit rules (linter, prettier, tests)
+// TODO Add tests to husky pre-commit hook
