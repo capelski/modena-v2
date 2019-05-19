@@ -18,6 +18,11 @@ export interface IMatchingItems<T> {
     items: T[];
 }
 
+export interface IModenaOptions {
+    enableHttps: boolean;
+    port: number;
+}
+
 export interface IModenaRequest extends Request {
     __modenaApp?: IAppSettings;
 }
