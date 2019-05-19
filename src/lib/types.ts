@@ -18,8 +18,16 @@ export interface IMatchingItems<T> {
     items: T[];
 }
 
+export interface IHttpsConfiguration {
+    certPath: string;
+    disableHttp?: boolean;
+    enableHttps?: boolean;
+    keyPath: string;
+    passphrase?: string;
+}
+
 export interface IModenaOptions {
-    enableHttps: boolean;
+    httpsConfiguration?: IHttpsConfiguration;
     port: number;
 }
 

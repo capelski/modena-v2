@@ -1,6 +1,6 @@
 import { Application, NextFunction, Response } from 'express';
 import { join } from 'path';
-import { IAppSettings, IModenaOptions, IModenaRequest } from './types';
+import { IAppSettings, IModenaRequest } from './types';
 
 export const exposeHostedApps = (mainApp: Application, appsSettings: IAppSettings[]) => {
     return Promise.all(
@@ -48,24 +48,6 @@ export const getRenderIsolator = (appsPath: string) => (
         };
     }
     next();
-};
-
-export const launchServer = (app: Application, options: Partial<IModenaOptions> = {}) => {
-    const defaultedOptions: IModenaOptions = {
-        enableHttps: false,
-        port: 80,
-        ...options,
-    };
-
-    return new Promise((resolve: (result?: any) => void, reject: (error?: any) => void) => {
-        app.listen(defaultedOptions.port, (error: any) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
 };
 
 export const setDefaultApp = (appsSettings: IAppSettings[], defaultAppName: string) => {

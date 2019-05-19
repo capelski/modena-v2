@@ -1,16 +1,18 @@
 export { getAvailableApps } from './lib/discovery';
+export { exposeHostedApps, getRenderIsolator, setDefaultApp } from './lib/misc';
 export { getRequestResolver } from './lib/resolvers';
-export { exposeHostedApps, getRenderIsolator, launchServer, setDefaultApp } from './lib/misc';
+export { httpsRedirectMiddleware, launchServer } from './lib/server';
 export {
-    IMatchingItems,
     IAppSettings,
     IDictionary,
+    IHttpsConfiguration,
+    IMatchingItems,
     IModenaOptions,
     IModenaRequest,
 } from './lib/types';
 
+// TODO .prettier trailing comma to none
 // TODO README.md, LICENSE.md
-// TODO Enable HTTPs capabilities
 // TODO Add winston. Add no-console: true to tslint.json
 // TODO Create cucumber unit tests
 // TODO Add tests to husky pre-commit hook

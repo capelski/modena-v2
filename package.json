@@ -41,5 +41,8 @@
         "prepublishOnly": "npm run build:clean",
         "prettier:check": "prettier --list-different \"src/**/*.ts\"",
         "prettier:write": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "https": "^1.0.0"
     }
 }
