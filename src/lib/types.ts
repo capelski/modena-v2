@@ -6,6 +6,7 @@ export interface IAppSettings {
     isDefaultApp: boolean;
     name: string;
     path: string;
+    publicDomainCrossAccess: boolean;
     publicDomains: string[];
 }
 

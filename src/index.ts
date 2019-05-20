@@ -11,7 +11,6 @@ export {
     IModenaRequest
 } from './lib/types';
 
-// TODO .prettier trailing comma to none
 // TODO README.md, LICENSE.md
 // TODO Add winston. Add no-console: true to tslint.json
 // TODO Create cucumber unit tests

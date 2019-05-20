@@ -99,13 +99,23 @@ export const getRequestResolver = (appsSettings: IAppSettings[]) => (
     next: NextFunction
 ) => {
     console.log(`Accessing ${req.url}...`);
-    req.__modenaApp = undefined;
 
     req.__modenaApp = resolveThroughDomain(appsSettings, req.headers.host!);
-    // TODO Take into consideration allowCrossAccess for public domains
-    req.__modenaApp = req.__modenaApp || resolveThroughQueryParameters(appsSettings, req.query);
-    req.__modenaApp = req.__modenaApp || resolveThroughUrlPathname(appsSettings, req.url);
-    req.__modenaApp = req.__modenaApp || resolveThroughDefaultApp(appsSettings);
+    const isPublicDomainCrossAccess = req.__modenaApp && req.__modenaApp.publicDomainCrossAccess;
+
+    if (!req.__modenaApp || isPublicDomainCrossAccess) {
+        const queryParameterApp = resolveThroughQueryParameters(appsSettings, req.query);
+        if (queryParameterApp) {
+            req.__modenaApp = queryParameterApp;
+        } else {
+            const urlPathnameApp = resolveThroughUrlPathname(appsSettings, req.url);
+            if (urlPathnameApp) {
+                req.__modenaApp = urlPathnameApp;
+            } else if (!isPublicDomainCrossAccess) {
+                req.__modenaApp = resolveThroughDefaultApp(appsSettings);
+            }
+        }
+    }
 
     if (req.__modenaApp) {
         const namespacePrefix = '/' + req.__modenaApp.name;

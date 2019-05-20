@@ -30,6 +30,10 @@ export const getAvailableApps = (appsPath: string): IAppSettings[] => {
                 isDefaultApp: false,
                 name: appName,
                 path: appPath,
+                publicDomainCrossAccess:
+                    modenaAppConfig.publicDomainCrossAccess !== undefined
+                        ? modenaAppConfig.publicDomainCrossAccess
+                        : false,
                 publicDomains: modenaAppConfig.publicDomains || []
             };
             return appSettings;
