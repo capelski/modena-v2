@@ -42,7 +42,24 @@ export const exposeHostedApps = (mainApp: Application, configuration: IModenaCon
             }
         })
     ).then(results => {
-        mainApp.use(restoreRequestMiddleware);
+        mainApp.use((req: IModenaRequest, res: IModenaResponse, next: NextFunction) => {
+            console.log(
+                `   Unable to find the requested resource (${req.url}) in the ${
+                    req.__modenaApp!.name
+                } app. Restoring the original request...`
+            );
+            restoreRequest(req, res);
+            next();
+        });
+        mainApp.use((error: any, req: IModenaRequest, res: IModenaResponse, next: NextFunction) => {
+            console.log(
+                `   An error ocurred serving the requested resource (${req.url}) in the ${
+                    req.__modenaApp!.name
+                } app. Restoring the original request...`
+            );
+            restoreRequest(req, res);
+            next(error);
+        });
 
         const exposedAppsNumber = results.reduce((reduced, result) => reduced + result, 0);
         console.log(`Exposed ${exposedAppsNumber} apps in total!`);
@@ -66,18 +83,8 @@ const getRenderIsolatorMiddleware = (appsPath: string) => (
     next();
 };
 
-const restoreRequestMiddleware = (
-    req: IModenaRequest,
-    res: IModenaResponse,
-    next: NextFunction
-) => {
+const restoreRequest = (req: IModenaRequest, res: IModenaResponse) => {
     if (req.__modenaApp) {
-        console.log(
-            `   Unable to find the requested resource in the ${
-                req.__modenaApp.name
-            } app. Restoring the original request...`
-        );
-
         req.url = req.__originalUrl!;
         delete req.__originalUrl;
         delete req.__modenaApp;
@@ -85,7 +92,6 @@ const restoreRequestMiddleware = (
         res.render = res.__originalRender!;
         delete res.__originalRender;
     }
-    next();
 };
 
 const setDefaultApp = (appsSettings: IAppSettings[], defaultAppName: string) => {
