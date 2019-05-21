@@ -93,7 +93,7 @@ const resolveThroughUrlPathname = (appsSettings: IAppSettings[], url: string) =>
     return accessedApp;
 };
 
-export const getRequestResolver = (appsSettings: IAppSettings[]) => (
+export const getRequestResolverMiddleware = (appsSettings: IAppSettings[]) => (
     req: IModenaRequest,
     res: Response,
     next: NextFunction
@@ -120,6 +120,7 @@ export const getRequestResolver = (appsSettings: IAppSettings[]) => (
     if (req.__modenaApp) {
         const namespacePrefix = '/' + req.__modenaApp.name;
         if (!req.url.startsWith(namespacePrefix)) {
+            req.__originalUrl = req.url;
             req.url = namespacePrefix + req.url;
             console.log(`   Request url updated: ${req.url}`);
         }

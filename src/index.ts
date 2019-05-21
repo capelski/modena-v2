@@ -1,17 +1,13 @@
-export { getAvailableApps } from './lib/discovery';
-export { exposeHostedApps, getRenderIsolator, setDefaultApp } from './lib/misc';
-export { getRequestResolver } from './lib/resolvers';
+export { exposeHostedApps } from './lib/expose';
 export { httpsRedirectMiddleware, launchServer } from './lib/server';
 export {
     IAppSettings,
-    IDictionary,
     IHttpsConfiguration,
-    IMatchingItems,
-    IModenaOptions,
-    IModenaRequest
+    IModenaConfiguration,
+    IModenaOptions
 } from './lib/types';
 
 // TODO README.md, LICENSE.md
-// TODO Add winston. Add no-console: true to tslint.json
+// TODO Add winston. Add no-console: true to tslint.json. Add configuration parameters for the LOGS filename and Console Output
 // TODO Create cucumber unit tests
 // TODO Add tests to husky pre-commit hook

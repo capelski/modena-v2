@@ -1,8 +1,20 @@
-import { Application, NextFunction, Response } from 'express';
+import { Application, NextFunction } from 'express';
 import { join } from 'path';
-import { IAppSettings, IModenaRequest } from './types';
+import { getAvailableApps } from './discovery';
+import { getRequestResolverMiddleware } from './resolvers';
+import { IAppSettings, IModenaConfiguration, IModenaRequest, IModenaResponse } from './types';
 
-export const exposeHostedApps = (mainApp: Application, appsSettings: IAppSettings[]) => {
+export const exposeHostedApps = (mainApp: Application, configuration: IModenaConfiguration) => {
+    const appsPath = configuration.appsPath || join(__dirname, '..', '..', '..', '..', 'apps');
+    const appsSettings = getAvailableApps(appsPath);
+
+    if (configuration.defaultApp) {
+        setDefaultApp(appsSettings, configuration.defaultApp);
+    }
+
+    mainApp.use(getRequestResolverMiddleware(appsSettings));
+    mainApp.use(getRenderIsolatorMiddleware(appsPath));
+
     return Promise.all(
         appsSettings.map(appSettings => {
             try {
@@ -30,27 +42,53 @@ export const exposeHostedApps = (mainApp: Application, appsSettings: IAppSetting
             }
         })
     ).then(results => {
+        mainApp.use(restoreRequestMiddleware);
+
         const exposedAppsNumber = results.reduce((reduced, result) => reduced + result, 0);
         console.log(`Exposed ${exposedAppsNumber} apps in total!`);
+
+        return appsSettings;
     });
 };
 
-export const getRenderIsolator = (appsPath: string) => (
+const getRenderIsolatorMiddleware = (appsPath: string) => (
     req: IModenaRequest,
-    res: Response,
+    res: IModenaResponse,
     next: NextFunction
 ) => {
     if (req.__modenaApp) {
-        const renderFunction = res.render.bind(res);
+        res.__originalRender = res.render;
         res.render = (viewName: string, options?: object) => {
             const viewPath = join(appsPath, req.__modenaApp!.name, 'views', viewName);
-            renderFunction(viewPath, options);
+            res.__originalRender!(viewPath, options);
         };
     }
     next();
 };
 
-export const setDefaultApp = (appsSettings: IAppSettings[], defaultAppName: string) => {
+const restoreRequestMiddleware = (
+    req: IModenaRequest,
+    res: IModenaResponse,
+    next: NextFunction
+) => {
+    if (req.__modenaApp) {
+        console.log(
+            `   Unable to find the requested resource in the ${
+                req.__modenaApp.name
+            } app. Restoring the original request...`
+        );
+
+        req.url = req.__originalUrl!;
+        delete req.__originalUrl;
+        delete req.__modenaApp;
+
+        res.render = res.__originalRender!;
+        delete res.__originalRender;
+    }
+    next();
+};
+
+const setDefaultApp = (appsSettings: IAppSettings[], defaultAppName: string) => {
     const isThereSomeDefaultApp = appsSettings.reduce((reduced, appSettings) => {
         appSettings.isDefaultApp = appSettings.name === defaultAppName;
         return reduced || appSettings.isDefaultApp;

@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 export interface IAppSettings {
     envVariables: IDictionary<string | undefined>;
@@ -27,6 +27,12 @@ export interface IHttpsConfiguration {
     passphrase?: string;
 }
 
+// TODO Search for more descriptive interfaces name
+export interface IModenaConfiguration {
+    appsPath?: string;
+    defaultApp?: string;
+}
+
 export interface IModenaOptions {
     httpsConfiguration?: IHttpsConfiguration;
     port: number;
@@ -34,4 +40,9 @@ export interface IModenaOptions {
 
 export interface IModenaRequest extends Request {
     __modenaApp?: IAppSettings;
+    __originalUrl?: string;
+}
+
+export interface IModenaResponse extends Response {
+    __originalRender?: (viewPath: string, options?: object) => void;
 }
