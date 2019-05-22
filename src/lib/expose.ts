@@ -25,6 +25,7 @@ export const exposeHostedApps = (mainApp: Application, configuration: IModenaCon
                     console.log(`Successfully exposed ${appSettings.name}`);
                     return Promise.resolve(1);
                 } else {
+                    console.log(`Exposing ${appSettings.name} asynchronously...`);
                     return expressHostedApp
                         .then(deferredExpressHostedApp => {
                             mainApp.use(`/${appSettings.name}`, deferredExpressHostedApp);
