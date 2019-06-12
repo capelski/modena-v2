@@ -2,7 +2,7 @@ import { existsSync, lstatSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { IAppSettings, IDictionary } from './types';
 
-const getAppEnvironmentPrefix = (appName: string) =>
+export const getAppEnvironmentPrefix = (appName: string) =>
     appName.toUpperCase().replace(/-/g, '_') + '__';
 
 export const getAvailableApps = (appsPath: string): IAppSettings[] => {
