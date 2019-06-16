@@ -85,8 +85,8 @@ I recommend creating a file called `get-express-app.js` (modena will search for 
 
 See the following examples of split app creation and `listen` call files:
 
--   Regular function (synchronous): https://github.com/L3bowski/modena-v2-examples/tree/master/apps/default-app
--   Promise-returning function (asynchronous): https://github.com/L3bowski/modena-v2-examples/tree/master/apps/promise-app
+-   [Regular function (synchronous)](https://github.com/L3bowski/modena-v2-examples/tree/master/apps/default-app)
+-   [Promise-returning function (asynchronous)](https://github.com/L3bowski/modena-v2-examples/tree/master/apps/promise-app)
 
 Once the apps are ready, the first thing we need to do to host them through modena is to create a host project and install modena:
 
@@ -133,10 +133,6 @@ exposeHostedApps(mainApp)
     .catch(console.log);
 ```
 
-## App settings
-
-TODO modena.json
-
 ## URLs resolution
 
 TODO
@@ -146,11 +142,25 @@ TODO
 -   Relative url
 -   Default app
 
+## App settings
+
+Modena allows configuring certain app settings by placing a `modena.json` file in the root folder of the app. The settings that can be configured are listed below:
+
+-   expressAppFile: Name of the file containing the function that returns the express app. Defaults to `get-express-app.js`
+-   publicDomainCrossAccess: When using public domains allows to access other apps if set to true (by \$modena query string parameters or using the apps namespace as relative url). Defaults to `false`
+-   publicDomains: List of public domains bound to the app; see _URLs resolution_ section for more details on how to link a public domain to an app. Defaults to `[]`
+
 ## Environment variables injection
 
-TODO App prefixing + link to config-app
+Most productive express apps need to define environment variables (session secrets, database credentials, API keys, etc.). Modena provides a solution to automatically inject environment variables to each app based on the `process.env` global variable.
+
+On one hand, we need to define the environment variables from the host project by prefixing them with the application namespace (in SCREAMING_SNAKE_CASE) followed by two underscores and the name of the environment variable (I recommend using SCREAMING_SNAKE_CASE for the variables too; it will make your dockerization easier).
+
+This variables will later be passed as parameter to the express app function when modena requires the app. I also recommend defining the variable default values inside the same file. See the [configuration example app](https://github.com/L3bowski/modena-v2-examples/tree/master/apps/config-app) to get a better understanding on how to use the environment variables with modena.
 
 ## HTTP/HTTPS functionality
+
+TODO launcServer + httpsRedirectMiddleware
 
 ## Show me the mone... code!
 
