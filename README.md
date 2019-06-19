@@ -30,7 +30,7 @@ Modena scans the apps directory of the project (configurable through the appsPat
 
 The apps will then automatically be exposed on the host server by placing the following code on the `index.js` file:
 
-```
+```javascript
 const express = require('express');
 const { exposeHostedApps, launchServer } = require('modena');
 
@@ -38,7 +38,7 @@ const mainApp = express();
 
 // exposeHostedApps returns a Promise, so that apps can be created asynchronously
 exposeHostedApps(mainApp)
-    .then(() => launchServer(mainApp, { port: 3000}))
+    .then(() => launchServer(mainApp, { port: 3000 }))
     .catch(console.log);
 ```
 
@@ -48,7 +48,7 @@ So... that's it? Yes! In a nutshell. Additionally, it offers methods to access t
 
 Modena detects all the express applications in the host project folder and uses the express library ability to expose many apps inside another app, as showcased below (on an actual host project, each app is created/defined in its own file and directory, and the app folder name is used as its namespace):
 
-```
+```javascript
 const express = require('express');
 const express = require('express-session');
 
@@ -70,8 +70,7 @@ mainApp.use('/app-2', app2);
 mainApp.listen(3000, error => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log('Server listening in port 3000');
     }
 });
@@ -113,7 +112,7 @@ git submodule app <URL of your express app repository> apps/<app name>
 
 Finally we just have to create an entry point to run the host app (e.g. `index.js`) and we are ready to go!
 
-```
+```javascript
 const express = require('express');
 const { exposeHostedApps } = require('modena');
 
@@ -121,14 +120,13 @@ const mainApp = express();
 
 exposeHostedApps(mainApp)
     .then(_ => {
-        mainApp.listen(3000, (error) => {
+        mainApp.listen(3000, error => {
             if (error) {
                 console.log('Something went wrong');
-            }
-            else {
+            } else {
                 console.log('Server listening at port 3000');
             }
-        })
+        });
     })
     .catch(console.log);
 ```
