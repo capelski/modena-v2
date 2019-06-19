@@ -1,0 +1,17 @@
+[
+    {
+        "isDefaultApp": false,
+        "name": "regular-app",
+        "publicDomains": []
+    },
+    {
+        "isDefaultApp": true,
+        "name": "default-app",
+        "publicDomains": []
+    },
+    {
+        "isDefaultApp": false,
+        "name": "public-domain",
+        "publicDomains": ["public-domain.com"]
+    }
+]

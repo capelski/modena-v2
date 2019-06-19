@@ -1,6 +1,36 @@
 import { NextFunction, Response } from 'express';
 import { IAppSettings, IDictionary, IMatchingItems, IModenaRequest } from './types';
 
+export const resolveRequest = (req: IModenaRequest, appsSettings: IAppSettings[]) => {
+    req.__modenaApp = resolveThroughDomain(appsSettings, req.headers.host!);
+    const isPublicDomainCrossAccess = req.__modenaApp && req.__modenaApp.publicDomainCrossAccess;
+
+    if (!req.__modenaApp || isPublicDomainCrossAccess) {
+        const queryParameterApp = resolveThroughQueryParameters(appsSettings, req.query);
+        if (queryParameterApp) {
+            req.__modenaApp = queryParameterApp;
+        } else {
+            const urlPathnameApp = resolveThroughUrlPathname(appsSettings, req.url);
+            if (urlPathnameApp) {
+                req.__modenaApp = urlPathnameApp;
+            } else if (!isPublicDomainCrossAccess) {
+                req.__modenaApp = resolveThroughDefaultApp(appsSettings);
+            }
+        }
+    }
+
+    if (req.__modenaApp) {
+        const namespacePrefix = '/' + req.__modenaApp.name;
+        if (!req.url.startsWith(namespacePrefix)) {
+            req.__originalUrl = req.url;
+            req.url = namespacePrefix + req.url;
+            console.log(`   Request url updated: ${req.url}`);
+        }
+    } else {
+        console.log('   The request could not be resolved to any app');
+    }
+};
+
 const resolveThroughDefaultApp = (appsSettings: IAppSettings[]) => {
     const matchingApps = resolveThroughNonUniqueCriteria(
         appsSettings,
@@ -95,38 +125,10 @@ const resolveThroughUrlPathname = (appsSettings: IAppSettings[], url: string) =>
 
 export const getRequestResolverMiddleware = (appsSettings: IAppSettings[]) => (
     req: IModenaRequest,
-    res: Response,
+    _res: Response,
     next: NextFunction
 ) => {
     console.log(`Accessing ${req.url}...`);
-
-    req.__modenaApp = resolveThroughDomain(appsSettings, req.headers.host!);
-    const isPublicDomainCrossAccess = req.__modenaApp && req.__modenaApp.publicDomainCrossAccess;
-
-    if (!req.__modenaApp || isPublicDomainCrossAccess) {
-        const queryParameterApp = resolveThroughQueryParameters(appsSettings, req.query);
-        if (queryParameterApp) {
-            req.__modenaApp = queryParameterApp;
-        } else {
-            const urlPathnameApp = resolveThroughUrlPathname(appsSettings, req.url);
-            if (urlPathnameApp) {
-                req.__modenaApp = urlPathnameApp;
-            } else if (!isPublicDomainCrossAccess) {
-                req.__modenaApp = resolveThroughDefaultApp(appsSettings);
-            }
-        }
-    }
-
-    if (req.__modenaApp) {
-        const namespacePrefix = '/' + req.__modenaApp.name;
-        if (!req.url.startsWith(namespacePrefix)) {
-            req.__originalUrl = req.url;
-            req.url = namespacePrefix + req.url;
-            console.log(`   Request url updated: ${req.url}`);
-        }
-    } else {
-        console.log('   The request could not be resolved to any app');
-    }
-
+    resolveRequest(req, appsSettings);
     next();
 };

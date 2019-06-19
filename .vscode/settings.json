@@ -1,5 +1,6 @@
 {
-    "cSpell.words": [
-        "modena"
-    ]
+    "cSpell.words": ["modena"],
+    "cucumberautocomplete.steps": ["src/**/__step-definitions__/*ts"],
+    "cucumberautocomplete.syncfeatures": "features/**/*.feature",
+    "cucumberautocomplete.strictGherkinCompletion": true
 }

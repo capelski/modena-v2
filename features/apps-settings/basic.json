@@ -1,0 +1,19 @@
+[
+    {
+        "isDefaultApp": false,
+        "name": "app-1",
+        "publicDomains": []
+    },
+    {
+        "isDefaultApp": false,
+        "name": "app-2",
+        "publicDomains": ["app-2.com"],
+        "publicDomainCrossAccess": false
+    },
+    {
+        "isDefaultApp": false,
+        "name": "app-3",
+        "publicDomains": ["app-3.com"],
+        "publicDomainCrossAccess": true
+    }
+]
