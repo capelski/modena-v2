@@ -42,7 +42,7 @@ exposeHostedApps(mainApp)
     .catch(console.log);
 ```
 
-So... that's it? Yes! In a nutshell. Additionally, it offers different methods to access the apps without having to prefix the URLs with the app name, automatically injects environment variables into hosted apps and provides some HTTP/HTTPS functionalities.
+So... that's it? Yes! In a nutshell. Additionally, it offers methods to access the apps without having to prefix the URLs with the app namespace, automatically injects environment variables into hosted apps and provides some HTTP/HTTPS functionalities.
 
 ## How does it work?
 
@@ -135,12 +135,23 @@ exposeHostedApps(mainApp)
 
 ## URLs resolution
 
-TODO
+When the `exposeHostedApps` function is called modena will add some middleware to the express app that receives as parameter in order to be able to resolve requests in any of the rules listed below. Modena tests the resolution rules one by one in the listed order and, when finds one that matches an app, will skip the rest.
 
--   Domain names mapping (cross access vs isolated)
--   \$modena query string parameter
--   Relative url
--   Default app
+-   Domain names: Apps can be bound to any number of public domains (see [app settings](#app-settings) section). If a request host matches any of the public domains bound to an app, the request will be matched to that app (e.g. http://bound-domain.xyz/).
+
+    When setting `publicDomainCrossAccess` to true, the following two rules will still be tested even if a request matches an app by domain. In case any of the two rules match the request against any other app, the request will be matched to the other app (thus allowing other apps to be accessed through the domain)
+
+-   \$modena query string parameter: If a \$modena query string parameter is present in the request and it matches an app namespace, the request will be matched to that app. This rule is meant for static assets (e.g. http://localhost:3000/path/name?\$modena=app-1)
+
+-   Relative url: If the first part of the url pathname matches an app namespace, the request will be matched to that app (e.g. http://localhost:3000/app-1/resource)
+
+-   Default app: `exposeHostedApps` receives a configuration parameter that allows defining a default app. When set, the default app will be matched to any request that does not match any of the previous rules
+
+When a request is matched to an app, modena will prefix the request url pathname (req.url) with the app namespace if the pathname is not already prefixed.
+
+After the custom resolution middleware is added, all the hosted apps are exposed on top of the host app in alphabetic order, using the app folder name as unique namespace.
+
+Finally modena adds a last piece of middleware so that if a request matches an app but the app cannot find the requested resource (i.e. 404) or the app throws an exception while trying to serve the request, the request will be kept unmodified. Therefore, the request can still be captured in the host project (e.g. a generic controlled error message).
 
 ## App settings
 
@@ -148,7 +159,7 @@ Modena allows configuring certain app settings by placing a `modena.json` file i
 
 -   expressAppFile: Name of the file containing the function that returns the express app. Defaults to `get-express-app.js`
 -   publicDomainCrossAccess: When using public domains allows to access other apps if set to true (by \$modena query string parameters or using the apps namespace as relative url). Defaults to `false`
--   publicDomains: List of public domains bound to the app; see _URLs resolution_ section for more details on how to link a public domain to an app. Defaults to `[]`
+-   publicDomains: List of public domains bound to the app; see [URLs resolution](#urls-resolution) section for more details on how to link a public domain to an app. Defaults to `[]`
 
 ## Environment variables injection
 

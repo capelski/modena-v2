@@ -7,7 +7,6 @@ export {
     IServerConfiguration
 } from './lib/types';
 
-// TODO README.md, LICENSE.md
+// TODO LICENSE.md
+// TODO Test loadEnvironmentVariables and exposeHostedApps
 // TODO Add winston. Add no-console: true to tslint.json. Add configuration parameters for the LOGS filename and Console Output
-// TODO Create cucumber unit tests
-// TODO Add tests to husky pre-commit hook
