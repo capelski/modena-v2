@@ -2,9 +2,9 @@ export { exposeHostedApps } from './lib/expose';
 export { httpsRedirectMiddleware, launchServer } from './lib/server';
 export {
     IAppSettings,
+    IDiscoveryConfiguration,
     IHttpsConfiguration,
-    IModenaConfiguration,
-    IModenaOptions
+    IServerConfiguration
 } from './lib/types';
 
 // TODO README.md, LICENSE.md

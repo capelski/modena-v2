@@ -2,9 +2,9 @@ import { Application, NextFunction } from 'express';
 import { join } from 'path';
 import { getAvailableApps } from './discovery';
 import { getRequestResolverMiddleware } from './resolvers';
-import { IAppSettings, IModenaConfiguration, IModenaRequest, IModenaResponse } from './types';
+import { IAppSettings, IDiscoveryConfiguration, IModenaRequest, IModenaResponse } from './types';
 
-export const exposeHostedApps = (mainApp: Application, configuration: IModenaConfiguration) => {
+export const exposeHostedApps = (mainApp: Application, configuration: IDiscoveryConfiguration) => {
     const appsPath = configuration.appsPath || join(__dirname, '..', '..', '..', '..', 'apps');
     const appsSettings = getAvailableApps(appsPath);
 

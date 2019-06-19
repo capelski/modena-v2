@@ -14,6 +14,11 @@ export interface IDictionary<T> {
     [key: string]: T;
 }
 
+export interface IDiscoveryConfiguration {
+    appsPath?: string;
+    defaultApp?: string;
+}
+
 export interface IMatchingItems<T> {
     count: number;
     items: T[];
@@ -27,17 +32,6 @@ export interface IHttpsConfiguration {
     passphrase?: string;
 }
 
-// TODO Search for more descriptive interfaces name
-export interface IModenaConfiguration {
-    appsPath?: string;
-    defaultApp?: string;
-}
-
-export interface IModenaOptions {
-    httpsConfiguration?: IHttpsConfiguration;
-    port: number;
-}
-
 export interface IModenaRequest extends Request {
     __modenaApp?: IAppSettings;
     __originalUrl?: string;
@@ -45,4 +39,9 @@ export interface IModenaRequest extends Request {
 
 export interface IModenaResponse extends Response {
     __originalRender?: (viewPath: string, options?: object) => void;
+}
+
+export interface IServerConfiguration {
+    httpsConfiguration?: IHttpsConfiguration;
+    port: number;
 }

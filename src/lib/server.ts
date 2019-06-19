@@ -1,7 +1,7 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
-import { IHttpsConfiguration, IModenaOptions } from './types';
+import { IHttpsConfiguration, IServerConfiguration } from './types';
 
 const createHttpsServer = (app: Application, options: IHttpsConfiguration, resolve: () => void) => {
     const httpsCredentials = {
@@ -70,8 +70,8 @@ const launchHttpsServer = (app: Application, port: number, options: IHttpsConfig
     });
 };
 
-export const launchServer = (app: Application, options: Partial<IModenaOptions> = {}) => {
-    const defaultedOptions: IModenaOptions = {
+export const launchServer = (app: Application, options: Partial<IServerConfiguration> = {}) => {
+    const defaultedOptions: IServerConfiguration = {
         httpsConfiguration: undefined,
         port: 80,
         ...options
