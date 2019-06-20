@@ -3,16 +3,33 @@ import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
 import { IHttpsConfiguration, IServerConfiguration } from './types';
 
-const createHttpsServer = (app: Application, options: IHttpsConfiguration, resolve: () => void) => {
+const createHttpsServer = (
+    app: Application,
+    httpsConfiguration: IHttpsConfiguration,
+    resolve: () => void
+) => {
     const httpsCredentials = {
-        cert: readFileSync(options.certPath),
-        key: readFileSync(options.keyPath),
-        passphrase: options.passphrase
+        cert: readFileSync(httpsConfiguration.certPath),
+        key: readFileSync(httpsConfiguration.keyPath),
+        passphrase: httpsConfiguration.passphrase
     };
-    https.createServer(httpsCredentials, app).listen(443, () => {
-        console.log(`HTTPS express app listening at port 443`);
+    https.createServer(httpsCredentials, app).listen(httpsConfiguration.port, () => {
+        console.log(`HTTPS express app listening at port ${httpsConfiguration.port}`);
         resolve();
     });
+};
+
+const getHttpsConfiguration = (configuration?: IHttpsConfiguration) => {
+    let httpsConfiguration: IHttpsConfiguration | undefined;
+    if (configuration) {
+        httpsConfiguration = {
+            disableHttp: false,
+            enableHttps: true,
+            port: 443,
+            ...configuration
+        };
+    }
+    return httpsConfiguration;
 };
 
 export const httpsRedirectMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -25,22 +42,22 @@ export const httpsRedirectMiddleware = (req: Request, res: Response, next: NextF
     }
 };
 
-const isHttpsConfigurationValid = (options?: IHttpsConfiguration) => {
-    let isValid = false;
-    if (options && (options.enableHttps === undefined || options.enableHttps)) {
-        const existsCert = existsSync(options.certPath);
-        if (!existsCert) {
-            console.error('Wrong HTTPS configuration! Unable to find the provided certPath');
-        }
-
-        const existsKey = existsSync(options.keyPath);
-        if (!existsKey) {
-            console.error('Wrong HTTPS configuration! Unable to find the provided keyPath');
-        }
-
-        isValid = existsCert && existsKey;
+const isHttpsConfigurationValid = (httpsConfiguration: IHttpsConfiguration) => {
+    const existsCert = existsSync(httpsConfiguration.certPath);
+    if (!existsCert) {
+        console.error('Wrong HTTPS configuration! Unable to find the provided certPath');
     }
-    return isValid;
+
+    const existsKey = existsSync(httpsConfiguration.keyPath);
+    if (!existsKey) {
+        console.error('Wrong HTTPS configuration! Unable to find the provided keyPath');
+    }
+
+    if (!httpsConfiguration.enableHttps) {
+        console.log('Not launching HTTPS express app (enabledHttps is set to false)');
+    }
+
+    return existsCert && existsKey && httpsConfiguration.enableHttps;
 };
 
 const launchHttpServer = (app: Application, port: number) => {
@@ -56,27 +73,34 @@ const launchHttpServer = (app: Application, port: number) => {
     });
 };
 
-const launchHttpsServer = (app: Application, port: number, options: IHttpsConfiguration) => {
+const launchHttpsServer = (
+    app: Application,
+    port: number,
+    httpsConfiguration: IHttpsConfiguration
+) => {
     return new Promise((resolve: (result?: any) => void, reject: (error?: any) => void) => {
-        console.log(options);
-        if (options.disableHttp === undefined || !options.disableHttp) {
+        if (!httpsConfiguration.disableHttp) {
             launchHttpServer(app, port)
-                .then(_ => createHttpsServer(app, options, resolve))
+                .then(_ => createHttpsServer(app, httpsConfiguration, resolve))
                 .catch(reject);
         } else {
-            console.log('Not launching HTTP express app');
-            createHttpsServer(app, options, resolve);
+            console.log('Not launching HTTP express app (disableHttp is set to true)');
+            createHttpsServer(app, httpsConfiguration, resolve);
         }
     });
 };
 
-export const launchServer = (app: Application, options: Partial<IServerConfiguration> = {}) => {
-    const defaultedOptions: IServerConfiguration = {
+export const launchServer = (
+    app: Application,
+    configuration: Partial<IServerConfiguration> = {}
+) => {
+    const serverConfiguration: IServerConfiguration = {
         httpsConfiguration: undefined,
         port: 80,
-        ...options
+        ...configuration
     };
-    return isHttpsConfigurationValid(defaultedOptions.httpsConfiguration)
-        ? launchHttpsServer(app, defaultedOptions.port, defaultedOptions.httpsConfiguration!)
-        : launchHttpServer(app, defaultedOptions.port);
+    const httpsConfiguration = getHttpsConfiguration(serverConfiguration.httpsConfiguration);
+    return httpsConfiguration && isHttpsConfigurationValid(httpsConfiguration)
+        ? launchHttpsServer(app, serverConfiguration.port, httpsConfiguration)
+        : launchHttpServer(app, serverConfiguration.port);
 };

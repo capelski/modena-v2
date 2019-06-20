@@ -30,6 +30,7 @@ export interface IHttpsConfiguration {
     enableHttps?: boolean;
     keyPath: string;
     passphrase?: string;
+    port?: number;
 }
 
 export interface IModenaRequest extends Request {
