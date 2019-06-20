@@ -46,7 +46,7 @@
         "prepublishOnly": "npm run build:clean",
         "prettier:check": "prettier --list-different \"src/**/*.ts\"",
         "prettier:write": "prettier --write \"src/**/*.ts\"",
-        "test": "cucumber-js --require-module ts-node/register --require src/**/__step-definitions__/*.ts features/**/*.feature"
+        "test": "cucumber-js --require-module ts-node/register --require src/**/__step-definitions__/*.step.ts features/**/*.feature"
     },
     "dependencies": {
         "https": "^1.0.0"
