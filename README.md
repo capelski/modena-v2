@@ -171,14 +171,14 @@ This variables will later be passed as parameter to the express app function whe
 
 Modena provides a helper function called `launchServer` that can be used to launch the express host app. The advantage of using this function over the regular express app `listen` is that it allows to configure the protocol to be used (HTTP or HTTPS) through a configuration parameter. The configuration parameter accepts the following properties:
 
--   port: The port number where the HTTP server will run. Defaults to `80`
--   httpsConfiguration: An object with the necessary data to start an HTTPS certificate. Defaults to `undefined`
-    -   certPath: The path of the HTTPS certificate
-    -   disableHttp: If set to true, the HTTP server will NOT be started. Defaults to `false`
-    -   enableHttps: If set to true, the HTTPS server will be started. Defaults to `true`
-    -   keyPath: The path of the HTTPS certificate private key
-    -   passphrase: The passphrase of the HTTPS certificate, if it has one. Defaults to `undefined`
-    -   port: The port number where the HTTPS server will run. Defaults to `443`
+-   **port**: The port number where the HTTP server will run. Defaults to `80`
+-   **httpsConfiguration**: An object with the necessary data to start an HTTPS certificate. Defaults to `undefined`
+    -   **certPath**: The path of the HTTPS certificate
+    -   **disableHttp**: If set to true, the HTTP server will NOT be started. Defaults to `false`
+    -   **enableHttps**: If set to true, the HTTPS server will be started. Defaults to `true`
+    -   **keyPath**: The path of the HTTPS certificate private key
+    -   **passphrase**: The passphrase of the HTTPS certificate, if it has one. Defaults to `undefined`
+    -   **port**: The port number where the HTTPS server will run. Defaults to `443`
 
 Finally, when using HTTPS we usually want to redirect the traffic from HTTP to HTTPS. Modena provides a simple middleware function called `httpsRedirectMiddleware` to get this done:
 
