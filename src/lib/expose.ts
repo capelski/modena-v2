@@ -18,7 +18,11 @@ export const exposeHostedApps = (mainApp: Application, configuration: IDiscovery
     return Promise.all(
         appsSettings.map(appSettings => {
             try {
-                const getExpressHostedApp = require(appSettings.expressAppFile);
+                let getExpressHostedApp = require(appSettings.expressAppFile);
+                // Support for apps that use ES6 default exports
+                if (getExpressHostedApp.hasOwnProperty('default')) {
+                    getExpressHostedApp = getExpressHostedApp.default;
+                }
                 const expressHostedApp = getExpressHostedApp(appSettings.envVariables);
                 if (!(expressHostedApp instanceof Promise)) {
                     mainApp.use(`/${appSettings.name}`, expressHostedApp);
